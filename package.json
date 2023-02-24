@@ -17,12 +17,20 @@
     "commands": [{
       "command": "htmlfy.run",
       "title": "HTMLfy Liquid"
+    }, {
+      "command": "htmlfy.activate",
+      "title": "Activate HTMLfy"
     }]
   },
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "node ./test/runTest.js"
+  },
+  "publisher": "sanodzegg",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanodzegg/htmlfy.git"
   },
   "devDependencies": {
     "@types/vscode": "^1.75.0",
