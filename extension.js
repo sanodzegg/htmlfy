@@ -60,8 +60,10 @@ function activate(context) {
 		
 			const content = fs.readFileSync(workspacePath, 'utf-8');
 			const engine = new liquid.Liquid({
-			  root: [workspacePath],
+			  root: [workspacePath, path.join(workspaceFolders[0].uri.fsPath, 'snippets')],
 			  greedy: false,
+			  dynamicPartials: true,
+			  extname: '.liquid'
 			});
 			let result = await engine.parseAndRender(content);
 	
@@ -70,24 +72,26 @@ function activate(context) {
 				assetFiles.forEach(e => htmlHead += `<link rel="stylesheet" href="/assets/${e}" />\n`);
 			}
 			
-			let html = `
-	<!DOCTYPE html>
-	<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Document</title>
-		${htmlHead}
-	</head>
-	<body>
-		${result}
-	</body>
-	</html>
-			`;
-			const formatted = pretty(html);
-			fs.writeFileSync(htmlFilePath, formatted);
-			vscode.window.showInformationMessage(`File generated successfully.`);
+			if (workspacePath.endsWith(".liquid")) {
+				let html = `
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>Document</title>
+			${htmlHead}
+		</head>
+		<body>
+			${result}
+		</body>
+		</html>
+				`;
+				const formatted = pretty(html);
+				fs.writeFileSync(htmlFilePath, formatted);
+				vscode.window.showInformationMessage(`File generated successfully.`);
+			}
 		}
     });
     context.subscriptions.push(activateExtension, generateHtmlDisposable);
