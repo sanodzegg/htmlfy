@@ -53,7 +53,7 @@ function activate(context) {
 	
 			let assetFiles;
 			try {
-				assetFiles = fs.readdirSync(path.join(workspacePath, "/assets/"));
+				assetFiles = fs.readdirSync(path.join(workspaceFolders[0].uri.fsPath, "/assets/"));
 			} catch(err) {
 				if (err) vscode.window.showWarningMessage("No assets folder detected");
 			}
