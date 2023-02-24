@@ -2,7 +2,7 @@
   "name": "htmlfy",
   "displayName": "Liquid to HTML",
   "description": "Transform Liquid code into HTML",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -14,13 +14,16 @@
   ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [{
-      "command": "htmlfy.run",
-      "title": "HTMLfy Liquid"
-    }, {
-      "command": "htmlfy.activate",
-      "title": "Activate HTMLfy"
-    }]
+    "commands": [
+      {
+        "command": "htmlfy.run",
+        "title": "HTMLfy Liquid"
+      },
+      {
+        "command": "htmlfy.activate",
+        "title": "Activate HTMLfy"
+      }
+    ]
   },
   "scripts": {
     "lint": "eslint .",
