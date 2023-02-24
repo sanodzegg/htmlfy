@@ -20,8 +20,13 @@ function activate(context) {
 	myStatusBarItem.show();
 
 	let activateExtension = vscode.commands.registerCommand("htmlfy.activate", () => {
-		watching = true;
-		vscode.window.showInformationMessage(`Extension activated.`);
+		if (!watching) {
+			watching = true;
+			vscode.window.showInformationMessage(`Extension activated.`);
+		} else {
+			watching = false;
+			vscode.window.showInformationMessage(`Extension deactivated.`);
+		}
 	});
 
 	let generateHtmlDisposable = vscode.commands.registerCommand('htmlfy.run', async () => {
@@ -63,13 +68,33 @@ function activate(context) {
 			  root: [workspacePath, path.join(workspaceFolders[0].uri.fsPath, 'snippets')],
 			  greedy: false,
 			  dynamicPartials: true,
-			  extname: '.liquid'
+			  extname: '.liquid',
 			});
-			let result = await engine.parseAndRender(content);
-	
+			engine.registerTag('schema', {
+				parse: function (_, remainTokens) {
+					this.tokens = [];
+					while(remainTokens.length) {
+						let token = remainTokens.shift();
+						if (token instanceof liquid.TagToken && token.input === "{% endschema %}") break;
+						this.tokens.push(token);
+					}
+				},
+				render: () => { return '' }
+			});
+			let result = await engine.parseAndRender(content).then(html => {
+				html = html.replace('<script src="', '<script src="./assets/');
+				return html;
+			});
+
 			let htmlHead = '';
 			if (assetFiles) {
-				assetFiles.forEach(e => htmlHead += `<link rel="stylesheet" href="/assets/${e}" />\n`);
+				assetFiles.forEach(e => {
+					if (e.endsWith(".css")) {
+						htmlHead += `<link rel="stylesheet" href="/assets/${e}" />\n`;
+					} else if (e.endsWith(".js")) {
+						htmlHead += `<script src="/assets/${e}" defer></script>\n`;
+					}
+				});
 			}
 			
 			if (workspacePath.endsWith(".liquid")) {
